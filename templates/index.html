@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Decision Breaker AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0b1020;
+            color: #f5f7ff;
+            min-height: 100vh;
+            padding: 30px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        /* HEADER */
+
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            font-size: 34px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            color: #9ca8c7;
+            font-size: 17px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            line-height: 1.15;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: auto;
+            color: #aab4ce;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* CARD */
+
+        .card {
+            background: #131a2e;
+            border: 1px solid #28324d;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            margin-top: 22px;
+        }
+
+        label:first-child {
+            margin-top: 0;
+        }
+
+        .muted {
+            color: #7f8aa6;
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            background: #0d1426;
+            border: 1px solid #34405e;
+            color: white;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input {
+            height: 50px;
+        }
+
+        textarea:focus,
+        input:focus {
+            border-color: #6c8cff;
+            box-shadow: 0 0 0 3px rgba(108, 140, 255, 0.12);
+        }
+
+        textarea::placeholder,
+        input::placeholder {
+            color: #68738e;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            margin-top: 28px;
+            padding: 16px;
+            border: none;
+            border-radius: 11px;
+            background: #667eea;
+            color: white;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .analyze-btn:hover {
+            background: #7589ef;
+            transform: translateY(-1px);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
+        }
+
+        /* LOADING */
+
+        .loading {
+            margin-top: 30px;
+            background: #111a31;
+            border: 1px solid #33415f;
+            padding: 25px;
+            border-radius: 14px;
+            text-align: center;
+            color: #b8c4e0;
+            line-height: 1.8;
+        }
+
+        /* ANALYSIS */
+
+        #analysisResult {
+            margin-top: 35px;
+        }
+
+        .analysis-report {
+            background: #11182b;
+            border: 1px solid #293653;
+            border-radius: 18px;
+            padding: 30px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .report-header h2 {
+            font-size: 25px;
+        }
+
+        .mode-badge {
+            background: #173b2c;
+            color: #69e6a7;
+            border: 1px solid #286849;
+            border-radius: 20px;
+            padding: 7px 13px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .summary-card {
+            background: #17213a;
+            border-left: 4px solid #7185ee;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 22px;
+        }
+
+        .summary-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .summary-card p {
+            color: #c3cbe0;
+            line-height: 1.7;
+        }
+
+        /* METRICS */
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric {
+            background: #17213a;
+            border: 1px solid #2c3855;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .metric span {
+            color: #8995b1;
+            font-size: 13px;
+        }
+
+        /* SECTIONS */
+
+        .report-section {
+            margin-top: 30px;
+        }
+
+        .report-section h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .analysis-item {
+            background: #171f34;
+            border: 1px solid #2d3852;
+            border-radius: 11px;
+            padding: 18px;
+            margin-bottom: 12px;
+        }
+
+        .analysis-item h4 {
+            margin-bottom: 9px;
+            font-size: 16px;
+        }
+
+        .analysis-item p {
+            color: #bbc4d8;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .test {
+            background: #0e1628;
+            border-radius: 8px;
+            padding: 11px;
+            color: #aeb9d2;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        li {
+            color: #b9c3d9;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        /* RISKS */
+
+        .risk-item {
+            background: #171f34;
+            border: 1px solid #2d3852;
+            border-radius: 11px;
+            padding: 17px;
+            margin-bottom: 13px;
+        }
+
+        .risk-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .risk-top span {
+            font-weight: 700;
+        }
+
+        .risk-bar {
+            width: 100%;
+            height: 9px;
+            background: #29334c;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .risk-fill {
+            height: 100%;
+            background: #ef6b73;
+            border-radius: 10px;
+        }
+
+        .risk-item p {
+            color: #abb6cd;
+            line-height: 1.55;
+        }
+
+        /* BULLET CARDS */
+
+        .bullet-card {
+            background: #171f34;
+            border: 1px solid #2d3852;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            color: #bbc5da;
+            line-height: 1.6;
+        }
+
+        /* BREAK CARD */
+
+        .break-card {
+            margin-top: 32px;
+            background: #291b25;
+            border: 1px solid #69404d;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .break-card h3 {
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        .break-card p {
+            color: #d7c1c8;
+            line-height: 1.7;
+        }
+
+        /* RECOMMENDATION */
+
+        .recommendation {
+            margin-top: 30px;
+            background: #172b25;
+            border: 1px solid #35664e;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .recommendation h3 {
+            margin-bottom: 10px;
+        }
+
+        .recommendation p {
+            color: #b9d8ca;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        /* ERROR */
+
+        .error {
+            margin-top: 25px;
+            background: #351d23;
+            border: 1px solid #7c3946;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .error h3 {
+            margin-bottom: 10px;
+        }
+
+        .error p {
+            color: #e0bfc5;
+            margin-top: 7px;
+        }
+
+        /* FOOTER */
+
+        footer {
+            text-align: center;
+            margin-top: 35px;
+            color: #697590;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 20px 10px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .logo {
+                font-size: 27px;
+            }
+
+            .card,
+            .analysis-report {
+                padding: 20px;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <header class="hero">
+
+        <div class="logo">
+            ◈ Decision Breaker AI
+        </div>
+
+        <div class="tagline">
+            Think deeper. Decide better.
+        </div>
+
+        <h1>
+            Don't let your plan<br>
+            break you first.
+        </h1>
+
+        <p>
+            AI-POWERED CRITICAL DECISION ANALYSIS
+        </p>
+
+        <p style="margin-top: 10px;">
+            Enter a decision. The system challenges hidden assumptions,
+            finds blind spots, maps risks, and shows what you should test
+            before committing.
+        </p>
+
+    </header>
+
+
+    <!-- INPUT CARD -->
+
+    <div class="card">
+
+        <form id="decisionForm">
+
+            <!-- DECISION -->
+
+            <label for="decision">
+                What decision are you considering?
+            </label>
+
+            <textarea
+                id="decision"
+                name="decision"
+                placeholder="Example: I want to start a fast-food business near my college..."
+                required
+            ></textarea>
+
+
+            <!-- GOAL -->
+
+            <label for="goal">
+                What is your main goal?
+                <span class="muted">(optional)</span>
+            </label>
+
+            <input
+                type="text"
+                id="goal"
+                name="goal"
+                placeholder="e.g. Build a profitable side business"
+            >
+
+
+            <!-- CONSTRAINTS -->
+
+            <label for="constraints">
+                Constraints / resources
+                <span class="muted">(optional)</span>
+            </label>
+
+            <textarea
+                id="constraints"
+                name="constraints"
+                placeholder="e.g. ₹1 lakh budget, 6 months, college location"
+            ></textarea>
+
+
+            <!-- BUTTON -->
+
+            <button
+                type="submit"
+                id="analyzeButton"
+                class="analyze-btn"
+            >
+                ⚡ Analyze &amp; Break My Decision
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- ANALYSIS WILL APPEAR HERE -->
+
+    <div id="analysisResult"></div>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+        Decision Breaker AI • A critical-thinking system for better decisions
+    </footer>
+
+</div>
+
+
+<!-- IMPORTANT: LOAD JAVASCRIPT -->
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
