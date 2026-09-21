@@ -1,5 +1,8 @@
 # Decision Breaker AI
 
+## 🚀 Live Demo
+[Open Decision Breaker AI](https://decision-breaker-ai.onrender.com)
+
 Decision Breaker AI is an AI-powered critical decision and risk analysis web application.
 
 ## Core idea
