@@ -38,7 +38,7 @@ copy .env.example .env   # Windows
 python app.py
 ```
 
-Open http://127.0.0.1:5000
+Open https://decision-breaker-ai.onrender.com
 
 ### AI mode
 Add your API key to `.env`:
